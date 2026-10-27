@@ -1,52 +1,84 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
-  const {user,setShowLogin,logout,credit}= useContext(AppContext)
-  const navigate = useNavigate(); 
+  const { user, setShowLogin, logout, credit } = useContext(AppContext);
+  const navigate = useNavigate();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
   return (
-    <div className="flex items-center justify-between py-4">
+    <nav className="flex min-h-16 items-center justify-between gap-3 py-3 sm:py-4">
       <Link to="/">
-        <span className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
+        <span className="text-xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
           Promptify
         </span>
       </Link>
 
-      <div>
+      <div className="flex items-center">
         {user ? (
-          <div className="flex items-center gap-2 sm:gap-3 "> 
-            <button onClick={()=>navigate('/buy')} className="flex items-center gap-2 bg-blue-100 px-4 py-1.5 sm:py-3 rounded-full hover:scale-105 transition-all duration-700"> 
-              <img className="w-5 " src={assets.credit_star} alt="" />
-              <p>Credits left : {credit} </p>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => navigate("/buy")}
+              className="flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-2 text-xs transition-transform hover:scale-105 sm:gap-2 sm:px-4 sm:py-3 sm:text-sm"
+              aria-label={`Credits left: ${credit}. Buy more credits`}
+            >
+              <img className="w-4 sm:w-5" src={assets.credit_star} alt="" />
+              <span className="sm:hidden">{credit}</span>
+              <span className="hidden sm:inline">Credits left: {credit}</span>
             </button>
-            <p>Hi, {user.name}</p>
-            <div className="relative group ">
-              <img
-                src={assets.profile_icon}
-                className="w-10 drop-shadow"
-                alt="profile picture"
-              />
-              <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-12">
-                <ul className="list-none m-0 p-2 bg-white rounded-md border text-sm">
-                  <li onClick={logout} className="py-1 px-2 cursor-pointer pr-10">Logout</li>
-                </ul> 
-              </div>
+            <p className="hidden text-sm sm:block">Hi, {user.name}</p>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsProfileMenuOpen((isOpen) => !isOpen)}
+                className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                aria-label="Open profile menu"
+                aria-expanded={isProfileMenuOpen}
+              >
+                <img
+                  src={assets.profile_icon}
+                  className="w-9 drop-shadow sm:w-10"
+                  alt=""
+                />
+              </button>
+              {isProfileMenuOpen && (
+                <div className="absolute right-0 top-full z-10 mt-2 min-w-32 rounded-md border border-gray-200 bg-white p-1 text-sm text-black shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full rounded px-3 py-2 text-left hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2 sm:gap-5">
-            <p onClick={() => navigate("/buy")} className="cursor-pointer">
+          <div className="flex items-center gap-3 sm:gap-5">
+            <button
+              type="button"
+              onClick={() => navigate("/buy")}
+              className="cursor-pointer text-sm sm:text-base"
+            >
               Pricing
-            </p>
-            <button onClick={()=>setShowLogin(true)} className="bg-zinc-800 text-white px-7 py-2 sm:px-10 text-sm rounded-full hover:bg-zinc-700 transition-colors duration-150 cursor-pointer">
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowLogin(true)}
+              className="cursor-pointer rounded-full bg-zinc-800 px-5 py-2 text-sm text-white transition-colors duration-150 hover:bg-zinc-700 sm:px-10"
+            >
               Login
             </button>
           </div>
         )}
       </div>
-    </div>
+    </nav>
   );
 };
 
